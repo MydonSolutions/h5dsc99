@@ -1,0 +1,1 @@
+install_subdir('h5ds', install_dir : get_option('includedir'))
