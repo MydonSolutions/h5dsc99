@@ -20,14 +20,6 @@ void _H5DSprint_debug(const char *name, const char *msg, ...) {
 #endif // DEBUG
 }
 
-hid_t H5TcreateBool() {
-	hid_t H5_bool = H5Tcreate(H5T_ENUM, sizeof(H5_bool_t));
-	H5_bool_t val;
-	H5Tenum_insert(H5_bool, "FALSE", CPTR(val, H5_FALSE));
-	H5Tenum_insert(H5_bool, "TRUE" , CPTR(val, H5_TRUE));
-	return H5_bool;
-}
-
 void H5DSopen(
 	hid_t dest_id, hid_t Tmem_id, hid_t Tsto_id, H5_open_dataspace_t* dataspace
 ) {
@@ -271,7 +263,6 @@ size_t H5DSnelem_lims(H5_open_dataspace_t* dataspace) {
 	}
 	return nelem;
 }
-
 
 herr_t H5DSboolWrite(
 	hid_t dest_id,

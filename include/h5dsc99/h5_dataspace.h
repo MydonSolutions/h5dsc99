@@ -5,13 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-typedef enum {
-	H5_FALSE,
-	H5_TRUE
-} H5_bool_t;
-
-#define CPTR(VAR,CONST) ((VAR)=(CONST),&(VAR))
-hid_t H5TcreateBool();
+#include "h5_bool.h"
 
 enum H5_FILTER_FLAG {
 	H5_FILTER_FLAG_NONE = -1,
