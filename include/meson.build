@@ -1,1 +1,1 @@
-install_subdir('h5ds', install_dir : get_option('includedir'))
+install_subdir('h5dsc99', install_dir : get_option('includedir'))
