@@ -45,6 +45,8 @@ herr_t H5DSclose(H5_open_dataspace_t* dataspace);
 
 herr_t H5DSfree(H5_open_dataspace_t* dataspace);
 
+size_t H5DSsize(H5_open_dataspace_t* dataspace);
+
 void* H5DSmalloc(H5_open_dataspace_t* dataspace);
 
 void H5DSset(

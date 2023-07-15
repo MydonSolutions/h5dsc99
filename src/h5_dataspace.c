@@ -109,7 +109,7 @@ herr_t H5DSfree(H5_open_dataspace_t* dataspace) {
 	return 0;
 }
 
-void* H5DSmalloc(H5_open_dataspace_t* dataspace) {
+size_t H5DSsize(H5_open_dataspace_t* dataspace) {
 	_H5DSprint_debug(__FUNCTION__, "%s", dataspace->name);
 	size_t element_byte_size = H5Tget_size(dataspace->Tmem_id);
 	size_t nelem = H5DSnelem_chunks(dataspace);
@@ -117,9 +117,14 @@ void* H5DSmalloc(H5_open_dataspace_t* dataspace) {
 		nelem = H5DSnelem_lims(dataspace);
 		nelem = nelem > 0 ? nelem : H5DSnelem(dataspace);
 	}
-	
-	_H5DSprint_debug(__FUNCTION__, "'%s' allocated %ld bytes.", dataspace->name, nelem*element_byte_size);
-	return malloc(nelem*element_byte_size);
+	return nelem*element_byte_size;
+}
+
+void* H5DSmalloc(H5_open_dataspace_t* dataspace) {
+	_H5DSprint_debug(__FUNCTION__, "%s", dataspace->name);
+	size_t bytesize = H5DSsize(dataspace);
+	_H5DSprint_debug(__FUNCTION__, "'%s' allocated %ld bytes.", dataspace->name, bytesize);
+	return malloc(bytesize);
 }
 
 void H5DSset(
