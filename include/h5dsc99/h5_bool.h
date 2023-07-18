@@ -4,8 +4,8 @@
 #include "hdf5/serial/hdf5.h"
 
 typedef enum {
-	H5_FALSE,
-	H5_TRUE
+  H5_FALSE,
+  H5_TRUE
 } H5_bool_t;
 
 #define CPTR(VAR,CONST) ((VAR)=(CONST),&(VAR))
