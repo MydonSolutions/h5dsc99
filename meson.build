@@ -1,5 +1,5 @@
 project('h5dsc99', 'c',
-  version: '0.2.1',
+  version: '0.3.0',
   default_options: [
     'c_std=c99',
     'buildtype=release',
@@ -18,18 +18,18 @@ dep_lst = [
 subdir('include')
 subdir('src')
 
-lib_h5ds = library(
-  'h5ds',
+lib_h5dsc99 = library(
+  'h5dsc99',
   src_lst,
   include_directories: inc_lst,
   dependencies: dep_lst,
   install: true,
 )
 
-lib_h5ds_dep = declare_dependency(
+lib_h5dsc99_dep = declare_dependency(
   include_directories: inc_lst,
   dependencies: dep_lst,
-  link_with: lib_h5ds,
+  link_with: lib_h5dsc99,
 )
 
 subdir('tests')
