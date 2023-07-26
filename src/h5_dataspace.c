@@ -65,6 +65,14 @@ void H5DSopen(
 	dataspace->D_id = H5Dcreate(dest_id, dataspace->name, dataspace->Tmem_id, dataspace->S_id, H5P_DEFAULT, dataspace->P_id, H5P_DEFAULT);
 }
 
+herr_t H5DSchunk_update(H5_open_dataspace_t* dataspace) {
+	herr_t status = 0;
+  status += H5Sclose(dataspace->C_id);
+	status += H5Pset_chunk(dataspace->P_id, dataspace->rank, dataspace->dimchunks);
+	dataspace->C_id = H5Screate_simple(dataspace->rank, dataspace->dimchunks, NULL);	
+	return status;
+}
+
 herr_t H5DSclose(H5_open_dataspace_t* dataspace) {
 	_H5DSprint_debug(__FUNCTION__, "%s", dataspace->name);
 	herr_t status = 0;
@@ -179,27 +187,24 @@ herr_t H5DSextend(H5_open_dataspace_t* dataspace) {
 	// for selecting extension of space
 	hsize_t *start = malloc(dataspace->rank * sizeof(hsize_t));
 	memset(start, 0, dataspace->rank * sizeof(hsize_t));
-	hsize_t *end = malloc(dataspace->rank * sizeof(hsize_t));
-	memcpy(end, dataspace->dims, dataspace->rank * sizeof(hsize_t));
 
 	for (size_t i = 0; i < dataspace->rank; i++)
 	{
 		// TODO assert at least one unlimited dimension
 		if(dataspace->dimlims[i] == H5S_UNLIMITED) {
+			start[i] = dataspace->dims[i]; // hyperslab starts where the prior chunk ends
 			dataspace->dims[i] += dataspace->dimchunks[i];
 		}
 	}
 	
   herr_t status = H5Dset_extent(dataspace->D_id, dataspace->dims);
-	H5Sclose(dataspace->S_id); // this
+	status += H5Sclose(dataspace->S_id); // this
 	dataspace->S_id = H5Dget_space(dataspace->D_id); // this
 
 	// select extension of space
-	H5Sselect_all(dataspace->S_id);
-	H5Sselect_hyperslab(dataspace->S_id, H5S_SELECT_NOTB, start, NULL, end, NULL);
+	status += H5Sselect_hyperslab(dataspace->S_id, H5S_SELECT_SET, start, NULL, dataspace->dimchunks, NULL);
 
 	free(start);
-	free(end);
 	return status;
 }
 

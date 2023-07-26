@@ -41,6 +41,8 @@ void H5DSopen(
   hid_t dest_id, hid_t Tmem_id, hid_t Tsto_id, H5_open_dataspace_t* dataspace
 );
 
+herr_t H5DSchunk_update(H5_open_dataspace_t* dataspace);
+
 herr_t H5DSclose(H5_open_dataspace_t* dataspace);
 
 herr_t H5DSfree(H5_open_dataspace_t* dataspace);
