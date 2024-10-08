@@ -34,7 +34,8 @@ typedef struct {
   hid_t P_id;
   hid_t Tmem_id;
   hid_t Tsto_id;
-  char filter_flag; 
+  char filter_flag;
+  hsize_t* hyperslab_start;
 } H5_open_dataspace_t;
 
 void H5DSopen(

@@ -114,6 +114,9 @@ herr_t H5DSfree(H5_open_dataspace_t* dataspace) {
 	if (dataspace->dimchunks != NULL) {
 		free(dataspace->dimchunks);
 	}
+	if (dataspace->hyperslab_start != NULL) {
+		free(dataspace->hyperslab_start);
+	}
 	return 0;
 }
 
@@ -147,9 +150,11 @@ void H5DSset(
 	dataspace->dims = NULL;
 	dataspace->dimlims = NULL;
 	dataspace->dimchunks = NULL;
+	dataspace->hyperslab_start = NULL;
 	if(rank > 0) {
 		dataspace->dims = malloc(rank * sizeof(hsize_t));
 		dataspace->dimlims = malloc(rank * sizeof(hsize_t));
+		dataspace->hyperslab_start = malloc(rank * sizeof(hsize_t));
 		
 		if(chunks != NULL) {
 			dataspace->dimchunks = malloc(rank * sizeof(hsize_t));
@@ -158,11 +163,9 @@ void H5DSset(
 		for (size_t i = 0; i < rank; i++)
 		{
 			dataspace->dimlims[i] = dimlims[i];
-			dataspace->dims[i] = dimlims[i];
-			if(dimlims[i] == H5S_UNLIMITED) {
-				dataspace->dims[i] = 0;
-			}
-			_H5DSprint_debug(__FUNCTION__, "\tdim %ld (%llu/%llu)", i, dataspace->dims[i], dataspace->dimlims[i]);
+			dataspace->dims[i] = dimlims[i] == H5S_UNLIMITED ? chunks[i] : dimlims[i];
+			dataspace->hyperslab_start[i] = 0;
+			_H5DSprint_debug(__FUNCTION__, "\tdim %ld (%llu/%llu)", i, dataspace->hyperslab_start[i], dataspace->dimlims[i]);
 			if(chunks != NULL) {
 				// TODO assert chunk[i] < dimlims[i]
 				dataspace->dimchunks[i] = chunks[i];
@@ -175,7 +178,15 @@ void H5DSset(
 herr_t H5DSwrite(H5_open_dataspace_t* dataspace, const void* data) {
 	_H5DSprint_debug(__FUNCTION__, "%s", dataspace->name);
 	if(dataspace->dimchunks != NULL){
- 		return H5Dwrite(dataspace->D_id, dataspace->Tsto_id, dataspace->C_id, dataspace->S_id, H5P_DEFAULT, data);
+ 		herr_t ret = H5Dwrite(dataspace->D_id, dataspace->Tsto_id, dataspace->C_id, dataspace->S_id, H5P_DEFAULT, data);
+		for (size_t i = dataspace->rank; i-- > 0; )
+		{
+			dataspace->hyperslab_start[i] += dataspace->dimchunks[i];
+			if(dataspace->dimlims[i] != H5S_UNLIMITED && dataspace->hyperslab_start[i] < dataspace->dimlims[i]) {
+				break;
+			}
+		}
+		return ret;
 	}
 	else {
  		return H5Dwrite(dataspace->D_id, dataspace->Tsto_id, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
@@ -185,26 +196,29 @@ herr_t H5DSwrite(H5_open_dataspace_t* dataspace, const void* data) {
 herr_t H5DSextend(H5_open_dataspace_t* dataspace) {
 	_H5DSprint_debug(__FUNCTION__, "%s", dataspace->name);
 	// for selecting extension of space
-	hsize_t *start = malloc(dataspace->rank * sizeof(hsize_t));
-	memset(start, 0, dataspace->rank * sizeof(hsize_t));
-
-	for (size_t i = 0; i < dataspace->rank; i++)
+	for (size_t i = dataspace->rank; i-- > 0; )
 	{
 		// TODO assert at least one unlimited dimension
-		if(dataspace->dimlims[i] == H5S_UNLIMITED) {
-			start[i] = dataspace->dims[i]; // hyperslab starts where the prior chunk ends
+		if(dataspace->hyperslab_start[i] == dataspace->dimlims[i]) {
+			dataspace->hyperslab_start[i] = 0;
+		}
+		else if (dataspace->dimlims[i] == H5S_UNLIMITED) {
+			// unlimited dimension needs an extension
 			dataspace->dims[i] += dataspace->dimchunks[i];
+		}
+		else {
+			// the next hyperslab doesn't require an extension
+			break;
 		}
 	}
 	
-  herr_t status = H5Dset_extent(dataspace->D_id, dataspace->dims);
+	herr_t status = H5Dset_extent(dataspace->D_id, dataspace->dims);
 	status += H5Sclose(dataspace->S_id); // this
 	dataspace->S_id = H5Dget_space(dataspace->D_id); // this
 
 	// select extension of space
-	status += H5Sselect_hyperslab(dataspace->S_id, H5S_SELECT_SET, start, NULL, dataspace->dimchunks, NULL);
+	status += H5Sselect_hyperslab(dataspace->S_id, H5S_SELECT_SET, dataspace->hyperslab_start, NULL, dataspace->dimchunks, NULL);
 
-	free(start);
 	return status;
 }
 
