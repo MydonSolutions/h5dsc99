@@ -32,4 +32,10 @@ lib_h5dsc99_dep = declare_dependency(
   link_with: lib_h5dsc99,
 )
 
+pkg = import('pkgconfig')
+pkg.generate(
+  lib_h5dsc99,
+  libraries: dep_lst,
+)
+
 subdir('tests')
