@@ -202,7 +202,7 @@ herr_t H5DSextend(H5_open_dataspace_t* dataspace) {
 		if(dataspace->hyperslab_start[i] == dataspace->dimlims[i]) {
 			dataspace->hyperslab_start[i] = 0;
 		}
-		else if (dataspace->dimlims[i] == H5S_UNLIMITED) {
+		else if (dataspace->dimlims[i] == H5S_UNLIMITED && dataspace->hyperslab_start[i] == dataspace->dims[i]) {
 			// unlimited dimension needs an extension
 			dataspace->dims[i] += dataspace->dimchunks[i];
 		}
