@@ -1,5 +1,5 @@
 project('h5dsc99', 'c',
-  version: '0.4.0,
+  version: '0.4.1',
   default_options: [
     'c_std=c99',
     'buildtype=release',
