@@ -1,7 +1,7 @@
 #ifndef H5_BOOL_H
 #define H5_BOOL_H
 
-#include "hdf5/serial/hdf5.h"
+#include "hdf5.h"
 
 typedef enum {
   H5_FALSE,

@@ -1,5 +1,5 @@
 project('h5dsc99', 'c',
-  version: '0.3.1',
+  version: '0.4.0,
   default_options: [
     'c_std=c99',
     'buildtype=release',
@@ -11,8 +11,9 @@ src_lst = []
 inc_lst = [
 	include_directories('include'),
 ]
+hdf5_dep = dependency('hdf5', version: '>=1.14.0', language: 'c')
 dep_lst = [
-  dependency('hdf5'),
+  hdf5_dep
 ]
 
 subdir('include')

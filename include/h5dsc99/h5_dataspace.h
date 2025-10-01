@@ -1,9 +1,9 @@
 #ifndef H5_DATASPACE_H
 #define H5_DATASPACE_H
 
-#include "hdf5/serial/hdf5.h"
 #include <string.h>
 #include <stdlib.h>
+#include "hdf5.h"
 
 #include "h5_bool.h"
 
