@@ -28,10 +28,10 @@ typedef struct {
   hsize_t* dimlims;
   hsize_t* dimchunks;
   char* name;
-  hid_t S_id;
-  hid_t C_id; // Chunk_id: the space-ID for the memory
-  hid_t D_id;
-  hid_t P_id;
+  hid_t S_id; // Space ID
+  hid_t C_id; // Chunk ID: memory
+  hid_t D_id; // Dataset ID
+  hid_t P_id; // Access Properties ID
   hid_t Tmem_id;
   hid_t Tsto_id;
   char filter_flag;
@@ -62,6 +62,14 @@ void H5DSset(
 herr_t H5DSwrite(H5_open_dataspace_t* dataspace, const void* data);
 
 herr_t H5DSextend(H5_open_dataspace_t* dataspace);
+
+herr_t H5DSextend_write(H5_open_dataspace_t* dataspace, const void* data) {
+  herr_t status = H5DSextend(dataspace);
+  if (status == 0) {
+    status += H5DSwrite(dataspace, data);
+  }
+  return status;
+}
 
 void H5DSopenBool(
   hid_t dest_id, H5_open_dataspace_t* dataspace
@@ -124,6 +132,24 @@ herr_t H5DSstringWrite(
   const int rank,
   const hsize_t *dims,
   const char *data
+);
+
+void H5DSaccess(
+  hid_t src_id,
+  hid_t P_id,
+  H5_open_dataspace_t *dataspace
+);
+
+void H5DSaccess_set_chunks(H5_open_dataspace_t *dataspace);
+
+herr_t H5DSread(
+  H5_open_dataspace_t *dataspace,
+  void *data
+);
+
+void* H5DSread_all(
+  hid_t src_id,
+  char *d_name
 );
 
 #endif

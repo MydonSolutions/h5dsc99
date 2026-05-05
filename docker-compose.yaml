@@ -1,0 +1,9 @@
+services:
+  h5dsc99:
+    container_name: h5dsc99
+    build: .
+    entrypoint: /bin/bash
+    stdin_open: true
+    tty: true
+    volumes:
+    - .:/work/h5dsc99

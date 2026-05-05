@@ -101,8 +101,8 @@ int main() {
  	const hsize_t adim[] = {3};
 	const int chunk_dims3[] = {1, 3, 2};
 	hid_t aid1 = H5Screate(H5S_SIMPLE);
-  H5Sset_extent_simple(aid1, 1, adim, NULL);
-  hid_t attr1 = H5Acreate2(
+	H5Sset_extent_simple(aid1, 1, adim, NULL);
+	hid_t attr1 = H5Acreate(
 		int_array_dsid.D_id,
 		"Chunk Dimension Lengths",
 		H5T_NATIVE_INT,
@@ -110,7 +110,7 @@ int main() {
 		H5P_DEFAULT,
 		H5P_DEFAULT
 	);
-  H5Awrite(attr1, H5T_NATIVE_INT, chunk_dims3);
+	H5Awrite(attr1, H5T_NATIVE_INT, chunk_dims3);
 
 	const char* labels_dims3[] = {
 		"Matrix",
@@ -119,7 +119,7 @@ int main() {
 	};
 	hid_t T_id = H5Tcopy(H5T_C_S1);
 	H5Tset_size(T_id, H5S_UNLIMITED);
-  hid_t attr1_1 = H5Acreate2(
+	hid_t attr1_1 = H5Acreate(
 		int_array_dsid.D_id,
 		"Dimension Labels",
 		T_id,
@@ -127,12 +127,12 @@ int main() {
 		H5P_DEFAULT,
 		H5P_DEFAULT
 	);
-  H5Awrite(attr1_1, T_id, labels_dims3);
+	H5Awrite(attr1_1, T_id, labels_dims3);
   
-  /*
-  * Create scalar attribute.
-  */
-  hid_t attr2 = H5Acreate2(
+	/*
+	* Create scalar attribute.
+	*/
+	hid_t attr2 = H5Acreate(
 		int_array_dsid.D_id,
 		"Number of Dimensions",
 		H5T_NATIVE_INT,
@@ -162,8 +162,7 @@ int main() {
 	H5DSchunk_update(&int_array_dsid);
 
 	for (int chunk = 0; chunk < 3; chunk += 1) {
-		H5DSextend(&int_array_dsid);
-		H5DSwrite(&int_array_dsid, int_matrix_3x2);
+		H5DSextend_write(&int_array_dsid, int_matrix_3x2);
 
 		for (int i = 0; i < 2; i += 1) {
 			int_matrix_3x2[i] += 100;
