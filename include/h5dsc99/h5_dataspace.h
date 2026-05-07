@@ -63,7 +63,7 @@ herr_t H5DSwrite(H5_open_dataspace_t* dataspace, const void* data);
 
 herr_t H5DSextend(H5_open_dataspace_t* dataspace);
 
-herr_t H5DSextend_write(H5_open_dataspace_t* dataspace, const void* data) {
+static inline herr_t H5DSextend_write(H5_open_dataspace_t* dataspace, const void* data) {
   herr_t status = H5DSextend(dataspace);
   if (status == 0) {
     status += H5DSwrite(dataspace, data);
