@@ -142,6 +142,11 @@ void H5DSaccess(
 
 void H5DSaccess_set_chunks(H5_open_dataspace_t *dataspace);
 
+// Returns:
+//   -2 if the hyperslab increment failed
+//   -1 if the read failed
+//   1 if the hyperslab has wrapped back to all zero indices
+//   otherwise 0
 herr_t H5DSread(
   H5_open_dataspace_t *dataspace,
   void *data

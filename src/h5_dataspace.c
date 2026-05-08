@@ -1,7 +1,6 @@
 #include <errno.h>
 #include "h5dsc99/h5_dataspace.h"
 
-
 void _H5DSprint_debug(const char *name, const char *msg, ...) {
 #ifndef NDEBUG
 	fprintf(stderr, "Debug H5DS (%s)", name);
@@ -547,21 +546,31 @@ herr_t H5DSread(
             dataspace->P_id,
             data
         );
+		if (status < 0) {
+			return -1;
+		}
         
 		// increment hyperslab
-		for (size_t i = dataspace->rank; i-- > 0; )
+		ssize_t rank_inc = dataspace->rank;
+		for (; rank_inc-- > 0; )
 		{
-			dataspace->hyperslab_start[i] += dataspace->dimchunks[i];
-			if(dataspace->hyperslab_start[i] >= dataspace->dims[i]) {
-				dataspace->hyperslab_start[i] = 0;
+			dataspace->hyperslab_start[rank_inc] += dataspace->dimchunks[rank_inc];
+			if(dataspace->hyperslab_start[rank_inc] >= dataspace->dims[rank_inc]) {
+				dataspace->hyperslab_start[rank_inc] = 0;
 			}
 			else {
 				// the next hyperslab doesn't require an in a slower dimension
 				break;
 			}
 		}
-		status += H5Sselect_hyperslab(dataspace->S_id, H5S_SELECT_SET, dataspace->hyperslab_start, NULL, dataspace->dimchunks, NULL);
-        return status;
+		status = H5Sselect_hyperslab(dataspace->S_id, H5S_SELECT_SET, dataspace->hyperslab_start, NULL, dataspace->dimchunks, NULL);
+		if (status < 0) {
+			return -2;
+		}
+		if (rank_inc < 0) {
+			return 1;
+		}
+        return 0;
     }
 }
 

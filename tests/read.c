@@ -97,11 +97,34 @@ int main() {
 	n_elem = H5DSnelem_chunks(&h5ds_int3d);
 
     int *data = H5DSmalloc(&h5ds_int3d);
-	for (int chunk = 0; chunk < h5ds_int3d.dims[0]/h5ds_int3d.dimchunks[0]; chunk++) {
-		H5DSread(&h5ds_int3d, data);
+	herr_t status = 0;
+	int chunk = 0;
+	for (
+		;
+		status == 0 && chunk < h5ds_int3d.dims[0]/h5ds_int3d.dimchunks[0];
+		chunk++
+	) {
+		for (int r = 0; r < h5ds_int3d.rank; r ++) {
+			printf("\thyperslab_start[%d]: %ld\n", r, h5ds_int3d.hyperslab_start[r]);
+		}
+		status = H5DSread(&h5ds_int3d, data);
+		printf("\tread status returned: %d\n", status);
 		for (int i = 0; i < n_elem; i++) {
 			printf("\tC%d, @%d: %d\n", chunk, i, data[i]);
 		}
+	}
+	for (int r = 0; r < h5ds_int3d.rank; r ++) {
+		printf("final hyperslab_start[%d]: %ld\n", r, h5ds_int3d.hyperslab_start[r]);
+	}
+
+	int ret = 0;
+	if (status != 1) {
+		printf("H5DSread did not flag hyperslab wrap: returned value %d\n", status);
+		ret = 1;
+	}
+	if (chunk != h5ds_int3d.dims[0]/h5ds_int3d.dimchunks[0]) {
+		printf("H5DSread read more chunks than expected: %d != %ld\n", chunk, h5ds_int3d.dims[0]/h5ds_int3d.dimchunks[0]);
+		ret = 1;
 	}
     
     printf("Close:\n");
@@ -113,5 +136,5 @@ int main() {
     printf("Close: file_id\n");
     H5Fclose(file_id);
 
-    return 0;
+    return ret;
 }
