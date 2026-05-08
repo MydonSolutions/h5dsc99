@@ -499,6 +499,9 @@ void H5DSaccess_set_chunks(H5_open_dataspace_t *dataspace) {
 		}
 		_H5DSprint_debug(__FUNCTION__, "dimchunk[%d] = %d", i, dataspace->dimchunks[i]);
 	}
+	if (dataspace->C_id) {
+		H5Sclose(dataspace->C_id);
+	}
 	dataspace->C_id = H5Screate_simple(dataspace->rank, dataspace->dimchunks, NULL);
 	if (dataspace->hyperslab_start == NULL) {
 		dataspace->hyperslab_start = calloc(dataspace->rank*sizeof(hsize_t), 0);
