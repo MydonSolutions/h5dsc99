@@ -147,6 +147,26 @@ herr_t H5DSread(
   void *data
 );
 
+bool H5DSread_bool(
+	hid_t src_id,
+	char *d_name
+);
+
+int H5DSread_int(
+	hid_t src_id,
+	char *d_name
+);
+
+float H5DSread_float(
+	hid_t src_id,
+	char *d_name
+);
+
+double H5DSread_double(
+	hid_t src_id,
+	char *d_name
+);
+
 void* H5DSread_all(
   hid_t src_id,
   char *d_name

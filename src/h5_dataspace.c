@@ -1,8 +1,6 @@
+#include <errno.h>
 #include "h5dsc99/h5_dataspace.h"
 
-#ifndef NDEBUG
-#include <errno.h>
-#endif
 
 void _H5DSprint_debug(const char *name, const char *msg, ...) {
 #ifndef NDEBUG
@@ -20,6 +18,22 @@ void _H5DSprint_debug(const char *name, const char *msg, ...) {
 	fprintf(stderr, "\n");
 	fflush(stderr);
 #endif // DEBUG
+}
+
+void _H5DSprint_error(const char *name, const char *msg, ...) {
+	fprintf(stderr, "Error H5DS (%s)", name);
+	if(msg) {
+		va_list ap;
+		va_start(ap, msg);
+		fprintf(stderr, ": ");
+		vfprintf(stderr, msg, ap);
+		va_end(ap);
+	}
+	if(errno) {
+		fprintf(stderr, " [%s]", strerror(errno));
+	}
+	fprintf(stderr, "\n");
+	fflush(stderr);
 }
 
 void H5DSopen(
@@ -549,6 +563,74 @@ herr_t H5DSread(
 		status += H5Sselect_hyperslab(dataspace->S_id, H5S_SELECT_SET, dataspace->hyperslab_start, NULL, dataspace->dimchunks, NULL);
         return status;
     }
+}
+
+bool H5DSread_bool(
+	hid_t src_id,
+	char *d_name
+) {
+	H5_open_dataspace_t dataspace = {0};
+	dataspace.name = d_name;
+	H5DSaccess(src_id, H5P_DEFAULT, &dataspace);
+	if (dataspace.rank > 0) {
+		_H5DSprint_error("Dataspace '%s' is not a scalar, cannot use %s to read it.", dataspace.name, __FUNCTION__);
+		return 0;
+	}
+	bool data;
+	H5DSread(&dataspace, &data);
+	H5DSclose(&dataspace);
+	return data;
+}
+
+int H5DSread_int(
+	hid_t src_id,
+	char *d_name
+) {
+	H5_open_dataspace_t dataspace = {0};
+	dataspace.name = d_name;
+	H5DSaccess(src_id, H5P_DEFAULT, &dataspace);
+	if (dataspace.rank > 0) {
+		_H5DSprint_error("Dataspace '%s' is not a scalar, cannot use %s to read it.", dataspace.name, __FUNCTION__);
+		return 0;
+	}
+	int data;
+	H5DSread(&dataspace, &data);
+	H5DSclose(&dataspace);
+	return data;
+}
+
+float H5DSread_float(
+	hid_t src_id,
+	char *d_name
+) {
+	H5_open_dataspace_t dataspace = {0};
+	dataspace.name = d_name;
+	H5DSaccess(src_id, H5P_DEFAULT, &dataspace);
+	if (dataspace.rank > 0) {
+		_H5DSprint_error("Dataspace '%s' is not a scalar, cannot use %s to read it.", dataspace.name, __FUNCTION__);
+		return 0;
+	}
+	float data;
+	H5DSread(&dataspace, &data);
+	H5DSclose(&dataspace);
+	return data;
+}
+
+double H5DSread_double(
+	hid_t src_id,
+	char *d_name
+) {
+	H5_open_dataspace_t dataspace = {0};
+	dataspace.name = d_name;
+	H5DSaccess(src_id, H5P_DEFAULT, &dataspace);
+	if (dataspace.rank > 0) {
+		_H5DSprint_error("Dataspace '%s' is not a scalar, cannot use %s to read it.", dataspace.name, __FUNCTION__);
+		return 0;
+	}
+	double data;
+	H5DSread(&dataspace, &data);
+	H5DSclose(&dataspace);
+	return data;
 }
 
 void* H5DSread_all(

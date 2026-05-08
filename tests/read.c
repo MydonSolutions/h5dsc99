@@ -8,21 +8,17 @@ int main() {
 
 	// Primitives
     hid_t gprim_id = H5Gopen(file_id, "/1_primitives", H5P_DEFAULT);
-	double *data_double = H5DSread_all(gprim_id, "double_scalar");
-    printf("double_scalar: %f\n", data_double[0]);
-	free(data_double);
+	double data_double = H5DSread_double(gprim_id, "double_scalar");
+    printf("double_scalar: %f\n", data_double);
 
-	float *data_float = H5DSread_all(gprim_id, "float_scalar");
-    printf("float_scalar: %f\n", data_float[0]);
-	free(data_float);
+	float data_float = H5DSread_float(gprim_id, "float_scalar");
+    printf("float_scalar: %f\n", data_float);
 
-	int *data_int = H5DSread_all(gprim_id, "int_scalar");
-    printf("int_scalar: %d\n", data_int[0]);
-	free(data_int);
+	int data_int = H5DSread_int(gprim_id, "int_scalar");
+    printf("int_scalar: %d\n", data_int);
 
-	bool *data_bool = H5DSread_all(gprim_id, "bool_scalar");
-    printf("bool_scalar: %d\n", data_bool[0]);
-	free(data_bool);
+	bool data_bool = H5DSread_bool(gprim_id, "bool_scalar");
+    printf("bool_scalar: %d\n", data_bool);
 
     printf("Close: gprim_id\n");
     H5Gclose(gprim_id);
