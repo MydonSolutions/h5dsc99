@@ -11,9 +11,10 @@ src_lst = []
 inc_lst = [
 	include_directories('include'),
 ]
-hdf5_dep = dependency('hdf5', version: '>=1.14.0', language: 'c')
+
 dep_lst = [
-  hdf5_dep
+  dependency('zlib', required: true),
+  dependency('hdf5', version: '>=1.14.0', required: true)
 ]
 
 subdir('include')
