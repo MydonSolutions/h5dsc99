@@ -504,7 +504,7 @@ void H5DSaccess_set_chunks(H5_open_dataspace_t *dataspace) {
 	}
 	dataspace->C_id = H5Screate_simple(dataspace->rank, dataspace->dimchunks, NULL);
 	if (dataspace->hyperslab_start == NULL) {
-		dataspace->hyperslab_start = calloc(dataspace->rank*sizeof(hsize_t), 0);
+		dataspace->hyperslab_start = calloc(dataspace->rank, sizeof(hsize_t));
 	}
 	H5Sselect_hyperslab(
 		dataspace->S_id,

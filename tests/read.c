@@ -42,7 +42,7 @@ int main() {
     h5ds_int3d.name = "/3_chunked/integer_3d_array";
     H5DSaccess(file_id, H5P_DEFAULT, &h5ds_int3d);
     printf("%s\n", h5ds_int3d.name);
-	h5ds_int3d.dimchunks = calloc(h5ds_int3d.rank*sizeof(hsize_t), 0);
+	h5ds_int3d.dimchunks = calloc(h5ds_int3d.rank, sizeof(hsize_t));
 	h5ds_int3d.dimchunks[0] = 1;
 	H5DSaccess_set_chunks(&h5ds_int3d);
 
