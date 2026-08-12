@@ -645,6 +645,23 @@ double H5DSread_double(
 	return data;
 }
 
+char* H5DSread_string(
+	hid_t src_id,
+	char *d_name
+) {
+	H5_open_dataspace_t dataspace = {0};
+	dataspace.name = d_name;
+	H5DSaccess(src_id, H5P_DEFAULT, &dataspace);
+	_H5DSprint_debug(__FUNCTION__, "%s", dataspace.name);
+	size_t bytesize = H5DSsize(&dataspace);
+	_H5DSprint_debug(__FUNCTION__, "'%s' allocated %ld bytes.", dataspace.name, bytesize);
+	char *data = (char*) malloc(bytesize+1);
+	H5DSread(&dataspace, data);
+	data[bytesize] = '\0';
+	H5DSclose(&dataspace);
+	return data;
+}
+
 void* H5DSread_all(
 	hid_t src_id,
 	char *d_name

@@ -172,6 +172,11 @@ double H5DSread_double(
 	char *d_name
 );
 
+char* H5DSread_string(
+	hid_t src_id,
+	char *d_name
+);
+
 void* H5DSread_all(
   hid_t src_id,
   char *d_name

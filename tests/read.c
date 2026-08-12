@@ -26,11 +26,11 @@ int main() {
 	// Strings
 	printf("\n");
     hid_t gstr_id = H5Gopen(file_id, "/2_strings", H5P_DEFAULT);
-	char *data_char = H5DSread_all(gstr_id, "literal");
+	char *data_char = H5DSread_string(gstr_id, "literal");
     printf("literal: '%s'\n", data_char);
 	free(data_char);
 
-	data_char = H5DSread_all(gstr_id, "char_array");
+	data_char = H5DSread_string(gstr_id, "char_array");
     printf("char_array: '%s'\n", data_char);
 	free(data_char);
     printf("Close: gstr_id\n");
